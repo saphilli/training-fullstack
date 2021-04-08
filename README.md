@@ -1,2 +1,2 @@
 # training-fullstack
-repo for Full-Stack Development training
+Full-Stack Development training projects and coursework
