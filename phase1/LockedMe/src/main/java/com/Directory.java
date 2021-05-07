@@ -1,4 +1,4 @@
-package main.java.com;
+package com;
 
 import java.util.ArrayList;
 import java.io.File;
