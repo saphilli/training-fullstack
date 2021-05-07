@@ -1,18 +1,20 @@
-package app;
+package main.java.com;
 
 import java.util.Scanner;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class App implements Runnable {
 	
 	private static final String DEV = "Sarah Phillips" ;
 	private static final String APPNAME = "LockedMe";
-	private CommandLineParser cl;
+	private static CommandLineParser cl;
+	private static Logger log;
 	private Scanner scan;
 	
-	public App(CommandLineParser parser) {
+	public App(CommandLineParser parser, String loggerName) {
 		cl = parser;
 		scan = new Scanner(System.in);
+		log = Logger.getLogger(loggerName);
 	}
 
 	@Override
@@ -27,6 +29,7 @@ class App implements Runnable {
 			}
 			switch(res[0]) {
 			case "exit":
+				System.out.println("Exiting the application...");
 				running = false;
 				break;
 			case "add":
@@ -45,6 +48,7 @@ class App implements Runnable {
 	}
 	
 	private void startUp() {
+		log.info("Application running");
 		System.out.print("Welcome to "+ APPNAME +"\nDeveloped by: "+DEV+"\n");
 		cl.printOptions();
 	}

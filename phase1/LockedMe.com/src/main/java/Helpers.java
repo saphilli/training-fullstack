@@ -1,4 +1,4 @@
-package app;
+package main.java.com;
 
 class Helpers {
 
