@@ -7,14 +7,17 @@ class App implements Runnable {
 	
 	private static final String DEV = "Sarah Phillips" ;
 	private static final String APPNAME = "LockedMe";
-	private static CommandLineParser cl;
-	private static Logger log;
+	private static final String ROOT_FOLDER = "root";
+	private CommandLineParser cl;
+	private FileHandler fileSystem;
+	private Logger log;
 	private Scanner scan;
 	
 	public App(CommandLineParser parser, String loggerName) {
 		cl = parser;
 		scan = new Scanner(System.in);
 		log = Logger.getLogger(loggerName);
+		fileSystem = new FileHandler(ROOT_FOLDER,loggerName);
 	}
 
 	@Override
@@ -35,6 +38,7 @@ class App implements Runnable {
 			case "add":
 				break;
 			case "ls":
+				listFilesAscendingOrder();
 				break;
 			case "open":
 				break;
@@ -44,6 +48,15 @@ class App implements Runnable {
 				cl.printOptions();
 				break;
 			}
+		}
+	}
+	
+	private void listFilesAscendingOrder() {
+		var n = fileSystem.numberOfFiles();
+		System.out.println(n+" files:");
+		var files = fileSystem.listFiles();
+		while(files.hasNext()) {
+			System.out.println(files.next());
 		}
 	}
 	

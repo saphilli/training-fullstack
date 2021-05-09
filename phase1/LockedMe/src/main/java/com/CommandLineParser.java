@@ -8,6 +8,7 @@ class CommandLineParser {
 	private static Map<String,String> options;
 	static {
 		options = new HashMap<>();
+		options.put("cd", "Change context to the specified directory");
 		options.put("ls","Lists all files in ascending order"); 
 		options.put("add","Adds the specified file to the current directory");
 		options.put("delete","Deletes the specified file from the current directory");
@@ -21,7 +22,7 @@ class CommandLineParser {
 		var str = new StringBuilder();
 		for(var entry:options.entrySet()) {
 			var cmd = entry.getKey();
-			if(Helpers.equalsAny(cmd,"add","delete","open")) {
+			if(Helpers.equalsAny(cmd,"cd","add","delete","open")) {
 				cmd += " <file_name>";
 			}
 			var description = entry.getValue();
@@ -32,7 +33,7 @@ class CommandLineParser {
 	}
 
 	public void printOptions() {
-		System.out.println("\nEnter one of the below commands:\n"+help);
+		System.out.println("\nEnter one of the below commands:\n"+help+"\n");
 	}
 	
 	public String[] parseOption(String option) {
