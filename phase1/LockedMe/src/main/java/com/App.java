@@ -1,5 +1,6 @@
 package com;
 
+import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -25,15 +26,19 @@ class App implements Runnable {
 		startUp();
 		boolean running = true;
 		while(running) {
-			var res = cl.parseOption(scan.nextLine());
-			if(res.length == 0) {
+			System.out.print("\n\\"+fileSystem.getContext()+">  ");
+			var args = cl.parseOption(scan.nextLine());
+			if(args.length == 0) {
 				System.out.println("Enter 'help' to view list of possible commands");
 				continue;
 			}
-			switch(res[0]) {
+			switch(args[0]) {
 			case "exit":
 				System.out.println("Exiting the application...");
 				running = false;
+				break;
+			case "cd":
+				fileSystem.changeDirectory(args[1]);
 				break;
 			case "add":
 				break;

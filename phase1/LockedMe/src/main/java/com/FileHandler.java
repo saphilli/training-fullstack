@@ -16,26 +16,49 @@ public class FileHandler {
 
 	private SortedMap<String,File> fileMap;
 	private Logger logger;
-	private String context;
+	private File context;
+	private File root;
 	
 	public FileHandler(String rootFolder, String loggerName) {
 		logger = Logger.getLogger(loggerName);
-		var root = getRootDirectory(rootFolder).getAbsolutePath();
-		logger.log(Level.INFO, "Root directory is located at {0}", root);	
-		setContext(rootFolder);
+		root = getRootDirectory(rootFolder);
+		logger.log(Level.INFO, "Root directory is located at {0}", root.getAbsolutePath());	
+		context = root;
+		fileMap = readAllFiles(context);
 	}
 	
-	public void setContext(String directory) {
-		context = directory;
-		try {
+	
+	public void changeDirectory(String directory) {
+		var dir = new File(directory);
+		if(directory.equals(root.getName())) {
+			setContext(dir);
+		}else if(directory.equals("..")){
+			//travel back to parent directory
+			if(context != root) {
+				setContext(context.getParentFile());
+			}else {
+				System.out.print("root has no parent directory.");
+			}
+		}else {
+			//assume directory is a child of the current directory
+			var path = Paths.get(context.getName(),directory).toString();
+			dir = new File(path);
+			setContext(dir);
+		}
+	}
+	
+	private void setContext(File directory) {
+		if(directory.exists() && directory.isDirectory()) {
+			context = directory;
 			fileMap = readAllFiles(context);
-		} catch (IOException e) {
-			logger.warning("An exception occurred when reading files from the root folder:" + e.getMessage() + e.getStackTrace());
+			System.out.println("Current directory: "+context);
+		} else {
+			System.out.print(directory + " is not an existing directory.");
 		}
 	}
 	
 	public String getContext() {
-		return context;
+		return context.getPath();
 	}
 	
 	public int numberOfFiles() {
@@ -50,8 +73,9 @@ public class FileHandler {
 		return root;
 	}
 
-	public SortedMap<String, File> readAllFiles(String rootFolder) throws IOException {
-		Path dir = Paths.get(rootFolder);
+	//think about how the IOException should be handled
+	public SortedMap<String, File> readAllFiles(File context) {
+		Path dir = context.toPath();
 		var fileTree = new TreeMap<String,File>();
 		try(var paths = Files.walk(dir)){
 			paths.forEach(path -> {
@@ -60,6 +84,8 @@ public class FileHandler {
 		            fileTree.put(file.getName(),file);
 				}
 			});
+		} catch (IOException e) {
+            logger.warning("An exception occurred when reading files from the current directory:" + e.toString());
 		}
 		return fileTree;
 	}

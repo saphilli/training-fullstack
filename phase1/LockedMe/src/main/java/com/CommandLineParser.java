@@ -12,7 +12,7 @@ class CommandLineParser {
 		options.put("ls","Lists all files in ascending order"); 
 		options.put("add","Adds the specified file to the current directory");
 		options.put("delete","Deletes the specified file from the current directory");
-		options.put("open","Opens the specified file");
+		options.put("open","Opens the specified file if it exists in the current directory");
 		options.put("exit","Exits the program");
 		options.put("help","Display options");
 	}
@@ -53,6 +53,4 @@ class CommandLineParser {
 		}
 		return args;
 	}
-	
-	
 }
