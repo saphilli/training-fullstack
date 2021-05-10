@@ -41,11 +41,16 @@ class App implements Runnable {
 				fileSystem.changeDirectory(args[1]);
 				break;
 			case "add":
+				fileSystem.addFile(args[1]);
 				break;
 			case "ls":
-				listFilesAscendingOrder();
+				fileSystem.listAllFiles();
+				break;
+			case "search":
+				fileSystem.searchFile(args[1]);
 				break;
 			case "open":
+				fileSystem.openFile(args[1]);
 				break;
 			case "delete":
 				break;
@@ -53,15 +58,6 @@ class App implements Runnable {
 				cl.printOptions();
 				break;
 			}
-		}
-	}
-	
-	private void listFilesAscendingOrder() {
-		var n = fileSystem.numberOfFiles();
-		System.out.println(n+" files:");
-		var files = fileSystem.listFiles();
-		while(files.hasNext()) {
-			System.out.println(files.next());
 		}
 	}
 	

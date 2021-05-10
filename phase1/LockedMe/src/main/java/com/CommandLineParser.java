@@ -9,7 +9,8 @@ class CommandLineParser {
 	static {
 		options = new HashMap<>();
 		options.put("cd", "Change context to the specified directory");
-		options.put("ls","Lists all files in ascending order"); 
+		options.put("ls","Lists all files in the application in ascending order"); 
+		options.put("search","Searches for a file and displays the path if the file exists");
 		options.put("add","Adds the specified file to the current directory");
 		options.put("delete","Deletes the specified file from the current directory");
 		options.put("open","Opens the specified file if it exists in the current directory");
@@ -22,7 +23,7 @@ class CommandLineParser {
 		var str = new StringBuilder();
 		for(var entry:options.entrySet()) {
 			var cmd = entry.getKey();
-			if(Helpers.equalsAny(cmd,"cd","add","delete","open")) {
+			if(Helpers.equalsAny(cmd,"cd","add","delete","open","search")) {
 				cmd += " <file_name>";
 			}
 			var description = entry.getValue();
