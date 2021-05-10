@@ -1,6 +1,5 @@
 package com;
 
-import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -53,6 +52,7 @@ class App implements Runnable {
 				fileSystem.openFile(args[1]);
 				break;
 			case "delete":
+				fileSystem.deleteFile(args[1]);
 				break;
 			case "help":
 				cl.printOptions();
@@ -63,7 +63,7 @@ class App implements Runnable {
 	
 	private void startUp() {
 		log.info("Application running");
-		System.out.print("Welcome to "+ APPNAME +"\nDeveloped by: "+DEV+"\n");
+		System.out.print("\nWelcome to "+ APPNAME +"\nDeveloped by: "+DEV+"\n");
 		cl.printOptions();
 	}
 	

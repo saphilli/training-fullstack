@@ -27,24 +27,9 @@ public class FileHandler {
 		fileMap = readAllFiles(context);
 	}
 	
-	public void openFile(String fileName) {
-		var exists = fileMap.containsKey(fileName);
-		if(exists) {
-			var file = fileMap.get(fileName);
-			var desktop = Desktop.getDesktop();
-			try {
-				desktop.open(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}else {
-			System.out.print("No file named "+fileName+" in the current directory or any of it's subdirectories.");
-		}
-	}
-	
 	public void changeDirectory(String directory) {
 		var dir = new File(directory);
-		if(directory.equals(root.getName())) {
+		if(dir.getName().equals(root.getName())) {
 			setContext(dir);
 		}else if(directory.equals("..")){
 			//travel back to parent directory
@@ -64,15 +49,12 @@ public class FileHandler {
 	private void setContext(File directory) {
 		if(directory.exists() && directory.isDirectory()) {
 			context = directory;
-			//keep track of all files in app regardless of context?
-			//fileMap = readAllFiles(context);
 			System.out.println("Current directory: "+context);
 		} else {
 			System.out.print(directory + " is not an existing directory.");
 		}
 	}
 	
-//think about how the IOException should be handled
 	private SortedMap<String, File> readAllFiles(File context) {
 		Path dir = context.toPath();
 		var fileTree = new TreeMap<String,File>();
@@ -89,6 +71,23 @@ public class FileHandler {
 		return fileTree;
 	}
 	
+	public void openFile(String fileName) {
+		var exists = fileMap.containsKey(fileName);
+		if(exists) {
+			var file = fileMap.get(fileName);
+			if(Desktop.isDesktopSupported()) {
+				var desktop = Desktop.getDesktop();
+				try {
+					desktop.open(file);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}else {
+			System.out.print("No file named "+fileName+" in the current directory or any of it's subdirectories.");
+		}
+	}
+	
 	public String getContext() {
 		return context.getPath();
 	}
@@ -98,11 +97,11 @@ public class FileHandler {
 	}
 	
 	public File getRootDirectory(String rootName) {
-		var root = new File(rootName);
-		if(!root.exists()) {
-			root.mkdir();
+		var rootDir = new File(rootName);
+		if(!rootDir.exists()) {
+			rootDir.mkdir();
 		}
-		return root;
+		return rootDir;
 	}
 
 	public void listAllFiles() {
@@ -110,7 +109,7 @@ public class FileHandler {
 		System.out.println(n+" files:");
 		var files = fileMap.keySet().iterator();
 		while(files.hasNext()) {
-			System.out.println(files.next());
+			System.out.println("     "+files.next());
 		}
 	}
     
@@ -134,14 +133,32 @@ public class FileHandler {
 		}
 	}
 	
+	public void deleteFile(String fileName) {
+		var path = getPath(fileName);
+		if(!Helpers.isNullOrEmpty(path)) {
+			try {
+				Files.delete(Path.of(path));
+				fileMap.remove(fileName);
+				System.out.println("Successfully deleted the file "+fileName);
+			} catch (IOException e) {
+				var message = "Failed to delete the file" + fileName+", an exception was thrown during the operation: {0}";
+				logger.log(Level.SEVERE,message,e.toString());
+			}
+		}
+		else {
+			System.out.print("The file "+fileName+" does not exist.");
+		}
+		
+	}
 	public void searchFile(String fileName) {
 		var path = getPath(fileName);
 		if(!Helpers.isNullOrEmpty(path)) {
 			System.out.print(fileName + " was found at "+path);
 		}else {
-			System.out.print("The file "+ fileName + " does not exist");
+			System.out.print("The file "+ fileName + " does not exist.");
 		}
 	}
+	
 	public String getPath(String fileName) {
 		if(hasFile(fileName)) {
 			return fileMap.get(fileName).getPath();

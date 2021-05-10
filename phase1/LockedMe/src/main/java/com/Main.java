@@ -12,7 +12,6 @@ public class Main {
 	public static void main(String[] args) {
 		Logger log = Logger.getLogger(LOGGER);
 		log.setLevel(Level.INFO);
-		
 		try {
 			Runnable app = new App(new CommandLineParser(), LOGGER);
 			log.info("Starting application...");
