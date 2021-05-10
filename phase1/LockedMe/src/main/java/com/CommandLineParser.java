@@ -5,34 +5,31 @@ import java.util.HashMap;
 
 class CommandLineParser {
 	
-	private static Map<String,String> options;
+	private static Map<String,Integer> options;
+	//k=command v=number of args
 	static {
 		options = new HashMap<>();
-		options.put("cd", "Change context to the specified directory");
-		options.put("ls","Lists all files in the application in ascending order"); 
-		options.put("search","Searches for a file and displays the path if the file exists");
-		options.put("add","Adds the specified file to the current directory");
-		options.put("delete","Deletes the specified file from the current directory");
-		options.put("open","Opens the specified file if it exists in the current directory");
-		options.put("exit","Exits the program");
-		options.put("help","Display options");
+		options.put("cd", 1);
+		options.put("ls",0); 
+		options.put("search",1);
+		options.put("add",1);
+		options.put("delete",1);
+		options.put("open",1);
+		options.put("exit",0);
+		options.put("help",0);
 	}
-	private static String help = buildHelpString();
 	
-	private static String buildHelpString() {
-		var str = new StringBuilder();
-		for(var entry:options.entrySet()) {
-			var cmd = entry.getKey();
-			if(Helpers.equalsAny(cmd,"cd","add","delete","open","search")) {
-				cmd += " <file_name>";
-			}
-			var description = entry.getValue();
-			var offset = 20 - cmd.length();
-			str.append("\n"+cmd + " ".repeat(offset) + description);
-		}
-		return str.toString();
-	}
-
+	private static String help = "ls                  Lists all files in the application in ascending order\n"
+			+ "cd <file_name>      Change context to the specified directory\n"
+			+ "cd ..               Change context to parent directory"
+			+ "cd root             Change context to root directory"
+			+ "search <file_name>  Searches for a file and displays the path if the file exists\n"
+			+ "add <file_name>     Adds the specified file to the current directory\n"
+			+ "open <file_name>    Opens the specified file if it exists in the current directory"
+			+ "delete <file_name>  Deletes the specified file from the current directory\n"
+			+ "exit                Exits the program\n"
+			+ "help                Display options\n";
+	
 	public void printOptions() {
 		System.out.println("\nEnter one of the below commands:\n"+help+"\n");
 	}
