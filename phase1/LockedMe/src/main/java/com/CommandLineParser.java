@@ -24,14 +24,15 @@ class CommandLineParser {
 	}
 	
 	private static String help = "ls                  Lists all files in the application in ascending order\n"
+			+ "lsdir               List all directories and subdirectories\n"
 			+ "cd <file_name>      Change context to the specified directory\n"
 			+ "cd ..               Change context to parent directory\n"
 			+ "cd root             Change context to root directory\n"
-			+ "mkdir <path>        Create new directory(s)\n"
-			+ "rmdir <name>        Deletes a directory if it exists in the current directory and all of it's subdirectories."
+			+ "mkdir <path>        Creates new subdirectory(s) in the current directory\n"
+			+ "rmdir <name>        Deletes a directory if it exists in the current directory and all of it's subdirectories and files.\n"
 			+ "search <file_name>  Searches for a file and displays the path if the file exists\n"
 			+ "add <file_name>     Adds the specified file to the current directory\n"
-			+ "open <file_name>    Opens the specified file if it exists in the current directory"
+			+ "open <file_name>    Opens the specified file if it exists in the current directory\n"
 			+ "delete <file_name>  Deletes the specified file from the current directory\n"
 			+ "exit                Exits the program\n"
 			+ "help                Display options\n";

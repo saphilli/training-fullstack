@@ -27,8 +27,16 @@ hs_err_pid*
 .settings
 
 # Maven
-target
+target/
 
 # Sonar
 .sonar
 .sonarlint
+org.sonarlint.eclipse.core/plugins/
+org.sonarlint.eclipse.core/lib/
+org.sonarlint.eclipse.ui/lib/
+
+#Eclipse
+.classpath
+.project
+.settings

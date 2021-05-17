@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -47,7 +46,7 @@ public class FileHandler {
 			}
 		}else {
 			//assume directory is a child of the current directory
-			var path = Paths.get(context.getName(),directory).toString();
+			var path = Paths.get(context.getPath(),directory).toString();
 			dir = new File(path);
 			setContext(dir);
 		}
@@ -134,7 +133,10 @@ public class FileHandler {
 		var fullPath = Paths.get(context.getPath(),path).toString();
 		var dir = new File(fullPath);
 		if(!dir.exists()) {
-			return dir.mkdirs();
+			var created = dir.mkdirs();
+			if(!created) return false;
+			directorySet.add(dir.getPath());
+			return true;
 		}
 		logger.log(Level.WARNING,"Path already exists.");
 		return false;
@@ -152,12 +154,14 @@ public class FileHandler {
 	      }
 	    }
 	    Files.delete(Paths.get(path));
+	    directorySet.remove(path);
+	    fileMap.remove(path);
 	    return true;
 	}
 	
 	public void addFile(String fileName) {
 		if(hasFile(fileName)) {
-			logger.log(Level.WARNING,"{0} already exists and cannot be overwritten",fileName);
+			logger.log(Level.WARNING,"{0} already exists in the application and cannot be overwritten",fileName);
 		}else {
 			var created = false;
 			try {
