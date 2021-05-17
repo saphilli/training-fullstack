@@ -1,21 +1,23 @@
 package com;
 
-import org.junit.Assert.*;
-
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.nio.file.DirectoryNotEmptyException;
+import java.util.logging.Level;
 import java.nio.file.NoSuchFileException;
 
-
+@RunWith(JUnitParamsRunner.class)
 public class FileHandlerTests {
 	
 	private final String BASE_DIR = System.getProperty("user.dir");
@@ -112,28 +114,51 @@ public class FileHandlerTests {
 	}
 	
 	@Test
-	public void testDoesNotChangeToInvalidDirectory() {
+	@Parameters({"..","InvalidDirectory","a.txt"})
+	public void testDoesNotChangeToInvalidDirectoriesFromRoot(String directory) {
 		var fileSystem = new FileHandler(DIR_WITH_FILES,LOGGER);
-		fileSystem.changeDirectory("InvalidDirectory");
-		var newContext = fileSystem.getContext();
-		assertEquals(DIR_WITH_FILES,newContext);
-	}
-	
-	@Test 
-	public void testDoesNotChangeToRootParent() {
-		var fileSystem = new FileHandler(DIR_WITH_FILES,LOGGER);
-		fileSystem.changeDirectory("..");
+		fileSystem.changeDirectory(directory);
 		var newContext = fileSystem.getContext();
 		assertEquals(DIR_WITH_FILES,newContext);
 	}
 	
 	@Test
-	public void testDoesNotSetContextToFile() {
+	public void testCreateNewDirectory() {
 		var fileSystem = new FileHandler(DIR_WITH_FILES,LOGGER);
-		fileSystem.changeDirectory("a.txt");
-		var newContext = fileSystem.getContext();
-		assertEquals(DIR_WITH_FILES,newContext);
+		var path = Paths.get(SUBDIR, "NewDirectory").toString();
+		var fullPath = Paths.get(SUBDIR_PATH,"NewDirectory").toString();
+		var file = new File(fullPath);
+		
+		var created = fileSystem.createDirectory(path);
+		
+		assertTrue(created);
+		assertTrue(file.exists());
+		assertTrue(file.isDirectory());
 	}
+	
+	@Test
+	public void testDontCreateDirectoryThatExists() {
+		var fileSystem = new FileHandler(DIR_WITH_FILES,LOGGER);
+		var path = SUBDIR;
+		var file = new File(SUBDIR_PATH);
+		
+		var created = fileSystem.createDirectory(path);
+		
+		assertFalse(created);
+		assertTrue(file.isDirectory());
+		assertTrue(file.exists());
+	}
+	
+	@Test
+	public void testlistAllDirectories() {
+		var fileSystem = new FileHandler(DIR_WITH_FILES,LOGGER);
+		
+		var listString = fileSystem.listAllDirectories();
+		
+		assertEquals("directory-with-files\n"
+				+ "directory-with-files\\subdirectory\n",listString);
+	}
+	
 	
 	@Test
 	public void testListAllFiles() {
@@ -156,13 +181,31 @@ public class FileHandlerTests {
 	}
 	
 	@Test
-	public void testOpenFile() {
+	public void testAddAndReadFile() throws IOException {
+		var fileSystem = new FileHandler(DIR_WITH_FILES,LOGGER);
+		var fileName = "new.txt";
+		var filePath = Paths.get(DIR_WITH_FILES_PATH +"/"+ fileName).toString();
+		var file = new File(filePath);
+		var text = "Some sample text";
 		
+		fileSystem.addFile(fileName);
+		fileSystem.writeToFile(fileName, text);
+		var actualText = fileSystem.readFile(fileName);
+		
+		assertTrue(file.exists());
+		assertEquals(text,actualText);
 	}
 	
 	@Test
-	public void testAddFile() {
+	public void testReadEmptyFile() throws IOException {
+		var fileSystem = new FileHandler(DIR_WITH_FILES,LOGGER);
+		var fileName = "a.txt";
+		var filePath = Paths.get(DIR_WITH_FILES_PATH +"/"+ fileName).toString();
+
+		fileSystem.addFile(fileName);
+		var actualText = fileSystem.readFile(fileName);
 		
+		assertEquals("",actualText);
 	}
 	
 	@Test
@@ -180,11 +223,15 @@ public class FileHandlerTests {
 		fileSystem.deleteFile(fileName);
 	}
 	
-	@Test(expected=DirectoryNotEmptyException.class)
-	public void testDeleteNotEmptyDirectory() throws IOException {
+	@Test
+	public void testDeleteNonEmptyDirectory() throws IOException {
 		var fileSystem = new FileHandler(DIR_WITH_FILES,LOGGER);
-		var fileName = SUBDIR;
-		fileSystem.deleteFile(fileName);
+		var path = SUBDIR_PATH;
+		var file = new File(path);
+		
+		fileSystem.deleteDirectory(path);
+		
+		assertFalse(file.exists());
 	}
 	
 	@Test
