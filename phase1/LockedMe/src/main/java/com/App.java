@@ -1,5 +1,6 @@
 package com;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.NoSuchFileException;
@@ -54,7 +55,7 @@ class App implements Runnable {
 				System.out.print(fileSystem.listAllDirectories());
 				break;
 			case "add":
-				fileSystem.addFile(args[1]);
+				addFile(args[1]);
 				break;
 			case "ls":
 				System.out.print(fileSystem.listAllFiles());
@@ -62,8 +63,8 @@ class App implements Runnable {
 			case "search":
 				searchFile(args[1]);
 				break;
-			case "open":
-				fileSystem.openFile(args[1]);
+			case "read":
+				readFile(args[1]);
 				break;
 			case "delete":
 				removeFile(args[1]);
@@ -71,6 +72,32 @@ class App implements Runnable {
 			case "help":
 				cl.printOptions();
 				break;
+			}
+		}
+	}
+	
+	private void startUp() {
+		logger.info("Application running");
+		System.out.println("\nWelcome to "+ APPNAME +"\nDeveloped by: "+DEV);
+		cl.printOptions();
+	}
+	
+	private void addFile(String fileName) {
+		var created = fileSystem.addFile(fileName);
+		if(created) System.out.println("File was successfully added. Path: "+fileSystem.getPath(fileName));
+		else System.out.println("Something went wrong when creating the file.");
+		System.out.println("Write to the file? (Y/N)");
+		if(cl.parseYes(scan)) {
+			System.out.print("Type some words, then when you're happy press \"Enter\"\n");
+			var text = scan.nextLine();
+			try {
+				fileSystem.writeToFile(fileName, text);
+				System.out.println("Successfully wrote to the file.");
+			}catch (FileNotFoundException e) {
+				System.out.print("Failed to write to "+fileName+" as the file was not found.");
+			}catch (IOException e){
+				var message = "Failed to write to the file " + fileName+", an exception was thrown during the operation: {0}";
+				logger.log(Level.SEVERE,message,e.toString());
 			}
 		}
 	}
@@ -88,17 +115,30 @@ class App implements Runnable {
 			logger.log(Level.SEVERE,message,e.toString());
 		}
 	}
+	
 	private void searchFile(String fileName) {
 		var path = fileSystem.getPath(fileName);
 		if(!Helpers.isNullOrEmpty(path)) {
 			System.out.println(fileName + " was found at "+path);
-			System.out.println("Open the file? (Y/N)");
+			System.out.println("Read the file? (Y/N)");
 			if(cl.parseYes(scan)) {
-				System.out.println("Opening file "+fileName+"....");
-				fileSystem.openFile(fileName);
+				readFile(fileName);
 			}
 		}else {
 			System.out.println("The file "+ fileName + " does not exist.");
+		}
+	}
+	
+	private void readFile(String fileName) {
+		System.out.println("Reading from the file "+fileName+"....");
+		try {
+			var text = fileSystem.readFile(fileName);
+			if(Helpers.isNullOrEmpty(text)) System.out.print("File contains no readable content");
+			else System.out.println(text);
+		} catch (IOException e) {
+			var message = "An exception occurred while attempting to read from the file "+fileName+": {0}";
+			logger.log(Level.SEVERE,message,e.toString());
+			System.out.print("Failed to read the file.");
 		}
 	}
 	
@@ -122,10 +162,6 @@ class App implements Runnable {
 		System.out.println("The path "+path+" was created");
 	}
 	
-	private void startUp() {
-		logger.info("Application running");
-		System.out.println("\nWelcome to "+ APPNAME +"\nDeveloped by: "+DEV);
-		cl.printOptions();
-	}
+	
 	
 }

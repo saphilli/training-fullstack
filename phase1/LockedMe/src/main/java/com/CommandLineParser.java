@@ -18,27 +18,27 @@ class CommandLineParser {
 		options.put("rmdir", 1);
 		options.put("lsdir", 0);
 		options.put("delete",1);
-		options.put("open",1);
+		options.put("read",1);
 		options.put("exit",0);
 		options.put("help",0);
 	}
 	
-	private static String help = "ls                  Lists all files in the application in ascending order\n"
-			+ "lsdir               List all directories and subdirectories\n"
-			+ "cd <file_name>      Change context to the specified directory\n"
-			+ "cd ..               Change context to parent directory\n"
-			+ "cd root             Change context to root directory\n"
-			+ "mkdir <path>        Creates new subdirectory(s) in the current directory\n"
-			+ "rmdir <name>        Deletes a directory if it exists in the current directory and all of it's subdirectories and files.\n"
-			+ "search <file_name>  Searches for a file and displays the path if the file exists\n"
-			+ "add <file_name>     Adds the specified file to the current directory\n"
-			+ "open <file_name>    Opens the specified file if it exists in the current directory\n"
-			+ "delete <file_name>  Deletes the specified file from the current directory\n"
-			+ "exit                Exits the program\n"
-			+ "help                Display options\n";
+	private static String help = "ls                  Lists all files in the application in ascending order.\n"
+			+ "lsdir               List all directories and subdirectories.\n\n"
+			+ "cd <file_name>      Change context to the specified directory.\n"
+			+ "cd ..               Change context to parent directory.\n"
+			+ "cd root             Change context to root directory.\n\n"
+			+ "mkdir <path>        Creates new subdirectory(s) in the current directory.\n"
+			+ "rmdir <name>        Deletes a directory if it exists in the current directory and all of it's subdirectories and files.\n\n"
+			+ "search <file_name>  Searches for a file and displays the path if the file exists.\n"
+			+ "add <file_name>     Adds the specified file to the current directory.\n"
+			+ "read <file_name>    Shows the content of the specified file if it exists.\n"
+			+ "delete <file_name>  Deletes the specified file from the current directory.\n\n"
+			+ "exit                Exits the program.\n"
+			+ "help                Display available commands.";
 	
 	public void printOptions() {
-		System.out.println("\nEnter one of the below commands:\n"+help+"\n");
+		System.out.println("\nAvailable commands:\n\n"+help+"\n\n");
 	}
 	
 	public String[] parseOption(String option) {

@@ -1,14 +1,20 @@
 package com;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.awt.Desktop;
+
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -33,25 +39,6 @@ public class FileHandler {
 		readAllFiles(context);
 	}
 	
-	public void changeDirectory(String directory) {
-		var dir = new File(directory);
-		if(dir.getName().equals(root.getName())) {
-			setContext(dir);
-		}else if(directory.equals("..")){
-			//travel back to parent directory
-			if(!context.equals(root)) {
-				setContext(context.getParentFile());
-			}else {
-				System.out.println("\\root has no parent directory.");
-			}
-		}else {
-			//assume directory is a child of the current directory
-			var path = Paths.get(context.getPath(),directory).toString();
-			dir = new File(path);
-			setContext(dir);
-		}
-	}
-	
 	private void setContext(File directory) {
 		if(directory.isDirectory()) {
 			context = directory;
@@ -59,6 +46,26 @@ public class FileHandler {
 			System.out.println(directory + " is not an existing directory.");
 		}
 	}
+	
+	public String getContext() {
+		return context.getPath();
+	}
+	
+	public String getPath(String fileName) {
+		if(hasFile(fileName)) {
+			return fileMap.get(fileName).getPath();
+		}
+		return "";	
+	}
+	
+	public boolean hasFile(String fileName) {
+		return fileMap.containsKey(fileName);
+	}
+	
+	public File getFile(String fileName) {
+		return fileMap.get(fileName);
+	}
+
 	
 	private void readAllFiles(File context) {
 		Path dir = context.toPath();
@@ -74,27 +81,6 @@ public class FileHandler {
 		} catch (IOException e) {
             logger.log(Level.WARNING,"An exception occurred when reading files from the current directory:{0}", e.toString());
 		}
-	}
-	
-	public void openFile(String fileName) {
-		var exists = fileMap.containsKey(fileName);
-		if(exists) {
-			var file = fileMap.get(fileName);
-			if(Desktop.isDesktopSupported()) {
-				var desktop = Desktop.getDesktop();
-				try {
-					desktop.open(file);
-				} catch (IOException e) {
-					logger.log(Level.SEVERE,"An exception was thrown while attempting to open the file: {0}",e);
-				}
-			}
-		}else {
-			System.out.println("No file named "+fileName+" in the current directory or any of it's subdirectories.");
-		}
-	}
-	
-	public String getContext() {
-		return context.getPath();
 	}
 	
 	public int numberOfFiles() {
@@ -129,6 +115,25 @@ public class FileHandler {
 		
 	}
 	
+	public void changeDirectory(String directory) {
+		var dir = new File(directory);
+		if(dir.getName().equals(root.getName())) {
+			setContext(dir);
+		}else if(directory.equals("..")){
+			//travel back to parent directory
+			if(!context.equals(root)) {
+				setContext(context.getParentFile());
+			}else {
+				System.out.println("\\root has no parent directory.");
+			}
+		}else {
+			//assume directory is a child of the current directory
+			var path = Paths.get(context.getPath(),directory).toString();
+			dir = new File(path);
+			setContext(dir);
+		}
+	}
+	
 	public boolean createDirectory(String path) {
 		var fullPath = Paths.get(context.getPath(),path).toString();
 		var dir = new File(fullPath);
@@ -159,17 +164,16 @@ public class FileHandler {
 	    return true;
 	}
 	
-	public void addFile(String fileName) {
+	public boolean addFile(String fileName) {
+		var created = false;
 		if(hasFile(fileName)) {
 			logger.log(Level.WARNING,"{0} already exists in the application and cannot be overwritten",fileName);
 		}else {
-			var created = false;
 			try {
 				var path = Paths.get(context.getPath(),fileName).toString();
 				var file = new File(path);
 				created = file.createNewFile();
 				if(created) {
-					logger.info("File was added.");
 					fileMap.put(fileName,file);
 				}
 				else logger.warning("Failed to add the file");
@@ -177,6 +181,33 @@ public class FileHandler {
 				logger.log(Level.WARNING,"An exception occurred when creating the file {0}",e.toString());
 			}
 		}
+		return created;
+	}
+	
+	public void writeToFile(String fileName, String text) throws IOException{
+		var file = getFile(fileName);
+		if(file == null) throw new FileNotFoundException();
+		try(var writer = new FileWriter(file)){
+			writer.write(text);
+			writer.flush();
+		}
+	}
+	
+	public String readFile(String fileName) throws IOException {
+		var file = getFile(fileName);
+		var buffer = "";
+		if(file == null) throw new FileNotFoundException();
+		try(var inputStream = new FileInputStream(file)){
+			var dataInStream = new DataInputStream(inputStream);
+			var size = inputStream.available();
+			var bytes = new byte[size];
+			var sizeRead = dataInStream.read(bytes);
+			if(sizeRead == 0) {
+				return "";
+			}
+			buffer = new String(bytes);
+		}
+		return buffer;
 	}
 
 	public void deleteFile(String fileName) throws IOException {
@@ -188,15 +219,5 @@ public class FileHandler {
 		fileMap.remove(fileName);
 	}
 	
-	public String getPath(String fileName) {
-		if(hasFile(fileName)) {
-			return fileMap.get(fileName).getPath();
-		}
-		return "";	
-	}
-	
-	public boolean hasFile(String fileName) {
-		return fileMap.containsKey(fileName);
-	}
 	
 }
