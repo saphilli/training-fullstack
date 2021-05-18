@@ -149,12 +149,12 @@ public class FileHandlerTests {
 	}
 	
 	@Test
-	public void testlistAllDirectories() {
+	public void testListAllDirectories() {
 		var fileSystem = new FileHandler(DIR_WITH_FILES,LOGGER);
 		
 		var listString = fileSystem.listAllDirectories();
 		
-		assertEquals("directory-with-files\n"
+		assertEquals("2 directories: \ndirectory-with-files\n"
 				+ "directory-with-files\\subdirectory\n",listString);
 	}
 	

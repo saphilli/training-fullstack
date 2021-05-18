@@ -1,26 +1,27 @@
 package com;
 
-import java.util.Map;
+
 import java.util.Scanner;
-import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 class CommandLineParser {
 	
-	private static Map<String,Integer> options;
+	private static Set<String> options;
 	//k=command v=number of args
 	static {
-		options = new HashMap<>();
-		options.put("cd", 1);
-		options.put("ls",0); 
-		options.put("search",1);
-		options.put("add",1);
-		options.put("mkdir", 1);
-		options.put("rmdir", 1);
-		options.put("lsdir", 0);
-		options.put("delete",1);
-		options.put("read",1);
-		options.put("exit",0);
-		options.put("help",0);
+		options = new HashSet<>();
+		options.add("cd");
+		options.add("ls"); 
+		options.add("search");
+		options.add("add");
+		options.add("mkdir");
+		options.add("rmdir");
+		options.add("lsdir");
+		options.add("delete");
+		options.add("read");
+		options.add("exit");
+		options.add("help");
 	}
 	
 	private static String help = "ls                  Lists all files in the application in ascending order.\n"
@@ -48,7 +49,7 @@ class CommandLineParser {
 		}
 		var args = option.stripLeading().split(" ");
 		var command = args[0];
-		if(options.get(command.toLowerCase()) == null) {
+		if(!options.contains(command.toLowerCase())) {
 			System.out.println("Command not recognized: "+command);
 			return new String[0];
 	    }

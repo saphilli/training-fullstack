@@ -87,6 +87,10 @@ public class FileHandler {
 		return fileMap.size();
 	}
 	
+	public int numberOfDirectories() {
+		return directorySet.size();
+	}
+	
 	public File getRootDirectory(String rootName) {
 		var rootDir = new File(rootName);
 		if(!rootDir.exists()) {
@@ -107,7 +111,9 @@ public class FileHandler {
 	}
 	
 	public String listAllDirectories() {
+		var n = numberOfDirectories() + " directories: \n";
 		var dirList = new StringBuilder();
+		dirList.append(n);
 		for(String dir : directorySet) {
 			dirList.append(dir+"\n");
 		}
