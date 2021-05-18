@@ -14,7 +14,6 @@ import junitparams.Parameters;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.logging.Level;
 import java.nio.file.NoSuchFileException;
 
 @RunWith(JUnitParamsRunner.class)
@@ -200,9 +199,7 @@ public class FileHandlerTests {
 	public void testReadEmptyFile() throws IOException {
 		var fileSystem = new FileHandler(DIR_WITH_FILES,LOGGER);
 		var fileName = "a.txt";
-		var filePath = Paths.get(DIR_WITH_FILES_PATH +"/"+ fileName).toString();
 
-		fileSystem.addFile(fileName);
 		var actualText = fileSystem.readFile(fileName);
 		
 		assertEquals("",actualText);
@@ -216,11 +213,21 @@ public class FileHandlerTests {
 		assertEquals("",fileSystem.getPath(fileName));
 	}
 	
-	@Test(expected=NoSuchFileException.class)
+	@Test
 	public void testDeleteNonexistantFile() throws IOException {
 		var fileSystem = new FileHandler(DIR_WITH_FILES,LOGGER);
 		var fileName = "NonexistantFile";
-		fileSystem.deleteFile(fileName);
+		var exceptionThrown = "";
+		
+		try {
+			fileSystem.deleteFile(fileName);
+		} catch (NoSuchFileException e) {
+			exceptionThrown = "NoSuchFileException";
+		} catch(Exception e) {
+			exceptionThrown = e.getClass().getName();
+		}
+		
+		assertEquals("NoSuchFileException",exceptionThrown);
 	}
 	
 	@Test

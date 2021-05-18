@@ -5,9 +5,9 @@ class Helpers {
 	private Helpers() {
 		throw new IllegalStateException("Helpers type cannot be instantiated");
 	}
-	public static boolean equalsAny(String str, String ... strings) {
+	public static boolean equalsAny(String match, String ... strings) {
 		for(String s:strings) {
-			if(str.equals(s)) {
+			if(match.equals(s)) {
 				return true;
 			}
 		}
