@@ -2,8 +2,6 @@ package com;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.logging.Handler;
-import java.util.logging.Formatter;
 
 public class Main {
 	
