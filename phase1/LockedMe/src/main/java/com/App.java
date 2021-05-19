@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 class App implements Runnable {
 	
 	private static final String DEV = "Sarah Phillips" ;
-	private static final String APPNAME = "LockedMe";
+	private static final String APP_NAME = "LockedMe";
 	private static final String ROOT_FOLDER = "root";
 	private CommandLineParser cl;
 	private FileHandler fileSystem;
