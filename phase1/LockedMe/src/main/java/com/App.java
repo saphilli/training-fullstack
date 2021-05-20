@@ -78,7 +78,7 @@ class App implements Runnable {
 	
 	private void startUp() {
 		logger.info("Application running");
-		System.out.println("\nWelcome to "+ APPNAME +"\nDeveloped by: "+DEV);
+		System.out.println("\nWelcome to "+ APP_NAME +"\nDeveloped by: "+DEV);
 		cl.printOptions();
 	}
 	
