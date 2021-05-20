@@ -169,17 +169,25 @@ public class FileHandler {
 	      File[] files = directory.listFiles();
 	      if(files != null) {
 	        for(File file : files) {
-	          var deleted = deleteDirectory(file.getPath());
+	          var deleted = deleteDirectory(file.getPath()); 
 	          if(!deleted) return false;
 	        }
 	      }
 	    }
-	    else if(directory.isFile()) {
+	    var isFile = directory.isFile();
+	    try {
+	    	  Files.delete(Paths.get(path));
+	      }catch (IOException e) {
+	    	  var message = "Failed to delete "+ path + " as an exception occurred: {0}";
+	    	  logger.log(Level.WARNING,message,e);
+	    	  return false;
+	      }
+	    if(isFile) {
 	    	var fileName = directory.getName();
 	    	fileMap.remove(fileName);
+	    }else {
+	    	directorySet.remove(path);
 	    }
-	    Files.delete(Paths.get(path));
-	    directorySet.remove(path);
 	    return true;
 	}
 	

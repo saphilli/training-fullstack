@@ -234,11 +234,11 @@ public class FileHandlerTests {
 	public void testDeleteNonEmptyDirectory() throws IOException {
 		var fileSystem = new FileHandler(DIR_WITH_FILES,LOGGER);
 		var path = SUBDIR_PATH;
-		var file = new File(path);
+		var dir = new File(path);
 		
 		fileSystem.deleteDirectory(path);
 		
-		assertFalse(file.exists());
+		assertFalse(dir.exists());
 	}
 	
 	@Test
