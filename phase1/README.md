@@ -1,6 +1,6 @@
 # Phase 1 Assessment
 ## LockedMe.com
-A Java console application serving as a file storage platform developed as a Maven project. The app accepts commands to add, delete, search and read from files, as well as to add and delete directories. 
+A Java console application serving as a file storage platform. This was developed as a Maven project. The app accepts commands to add, delete, search and read from files, as well as to add and delete directories. 
 
 ### Running the Application
 Clone this repository and open in an IDE such as Eclipse/IntelliJ to run locally. The program entry point is located at `../LockedMe/src/main/java/com/Main.java`.
@@ -36,3 +36,9 @@ The app validates all user input, and the user can enter the `help` command at a
 The user can change the current context to any directory in the `root` folder using `cd`. The user is not able to change to a directory that is a parent of the `root` directory.
 
 The app does not support writing to/editing files except for when they are first added through the `add` command. However if the files are edited and saved outside the application, these changes are reflected in the app and can be read by entering `read`.
+
+### Source Code
+
+Main application code is located under `../LockedMe/src/main/java/com`.
+
+Unit tests are also located under `../LockedMe/src/test/java/com`.
