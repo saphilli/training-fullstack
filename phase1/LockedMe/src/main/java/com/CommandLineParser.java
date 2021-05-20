@@ -57,6 +57,10 @@ class CommandLineParser {
 			System.out.println("Too many arguments entered for command: " + command);
 			return new String[0];
 		}
+		else if((args.length == 1 && Helpers.equalsAny(command,"add","search","rmdir","delete","read","mkdir","cd"))) {
+			System.out.println("Not enough arguments entered for command: " + command);
+			return new String[0];
+		}
 		return args;
 	}
 	
