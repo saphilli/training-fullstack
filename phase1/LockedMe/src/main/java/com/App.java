@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -82,21 +83,25 @@ class App implements Runnable {
 		cl.printOptions();
 	}
 	
-	private void addFile(String fileName) {
-		var created = fileSystem.addFile(fileName);
-		if(created) System.out.println("File was successfully added. Path: "+fileSystem.getPath(fileName));
-		else System.out.println("Something went wrong when creating the file.");
+	private void addFile(String path) {
+		var createdPath = fileSystem.addFile(path);
+		var fileName = fileSystem.getFileNameFromPath(path);
+		if(createdPath!=null) System.out.println("File was successfully added. Path: "+fileSystem.getPath(fileName));
+		else {
+			System.out.println("Something went wrong when creating the file.");
+			return;
+		}
 		System.out.println("Write to the file? (Y/N)");
 		if(cl.parseYes(scan)) {
 			System.out.print("Type some words, then when you're happy press \"Enter\"\n");
 			var text = scan.nextLine();
 			try {
-				fileSystem.writeToFile(fileName, text);
+				fileSystem.writeToFile(path, text);
 				System.out.println("Successfully wrote to the file.");
 			}catch (FileNotFoundException e) {
-				System.out.print("Failed to write to "+fileName+" as the file was not found.");
+				System.out.print("Failed to write to "+path+" as the file was not found.");
 			}catch (IOException e){
-				var message = "Failed to write to the file " + fileName+", an exception was thrown during the operation: {0}";
+				var message = "Failed to write to the file " + path+", an exception was thrown during the operation: {0}";
 				logger.log(Level.SEVERE,message,e.toString());
 			}
 		}

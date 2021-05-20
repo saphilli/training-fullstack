@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -56,6 +56,16 @@ public class FileHandler {
 			return fileMap.get(fileName).getPath();
 		}
 		return "";	
+	}
+	
+	public String getFileNameFromPath(String path) {
+		var fileName = "";
+		try {
+			fileName = Path.of(path).getFileName().toString();
+		}catch(Exception e) {
+			logger.warning("Couldn't get fileName from path entered.");
+		}
+		return fileName;
 	}
 	
 	public boolean hasFile(String fileName) {
@@ -170,27 +180,38 @@ public class FileHandler {
 	    return true;
 	}
 	
-	public boolean addFile(String fileName) {
+	public String addFile(String path) {
 		var created = false;
+		var fileName = getFileNameFromPath(path);
+		Path pathToFile = null;
 		if(hasFile(fileName)) {
 			logger.log(Level.WARNING,"{0} already exists in the application and cannot be overwritten",fileName);
 		}else {
 			try {
-				var path = Paths.get(context.getPath(),fileName).toString();
-				var file = new File(path);
+				var fullPath = Paths.get(context.getPath(),path);
+				pathToFile = fullPath.getParent();
+				Files.createDirectories(pathToFile);
+				var file = new File(fullPath.toString());
 				created = file.createNewFile();
 				if(created) {
 					fileMap.put(fileName,file);
 				}
-				else logger.warning("Failed to add the file");
-			} catch (IOException e) {
+				else {
+					logger.warning("Failed to add the file");
+					path = null;
+				}
+			} catch(FileAlreadyExistsException e) {
+				logger.log(Level.WARNING,"An exception occurred when creating the path: {0}",pathToFile);
+			}
+			catch (IOException e) {
 				logger.log(Level.WARNING,"An exception occurred when creating the file {0}",e.toString());
 			}
 		}
-		return created;
+		return path;
 	}
 	
-	public void writeToFile(String fileName, String text) throws IOException{
+	public void writeToFile(String path, String text) throws IOException{
+		var fileName = getFileNameFromPath(path);
 		var file = getFile(fileName);
 		if(file == null) throw new FileNotFoundException();
 		try(var writer = new FileWriter(file)){
@@ -199,7 +220,8 @@ public class FileHandler {
 		}
 	}
 	
-	public String readFile(String fileName) throws IOException {
+	public String readFile(String path) throws IOException {
+		var fileName = getFileNameFromPath(path);
 		var file = getFile(fileName);
 		var buffer = "";
 		if(file == null) throw new FileNotFoundException();
@@ -216,10 +238,11 @@ public class FileHandler {
 		return buffer;
 	}
 
-	public void deleteFile(String fileName) throws IOException {
-		var path = getPath(fileName);
-		if(Helpers.isNullOrEmpty(path)) {
-			throw new NoSuchFileException(fileName);
+	public void deleteFile(String path) throws IOException {
+		var fileName = getFileNameFromPath(path);
+		var fullPath = getPath(fileName);
+		if(Helpers.isNullOrEmpty(fullPath)) {
+			throw new NoSuchFileException(path);
 		}
 		Files.delete(Path.of(path));
 		fileMap.remove(fileName);
