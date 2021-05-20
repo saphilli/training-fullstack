@@ -174,9 +174,12 @@ public class FileHandler {
 	        }
 	      }
 	    }
+	    else if(directory.isFile()) {
+	    	var fileName = directory.getName();
+	    	fileMap.remove(fileName);
+	    }
 	    Files.delete(Paths.get(path));
 	    directorySet.remove(path);
-	    fileMap.remove(path);
 	    return true;
 	}
 	
@@ -185,7 +188,9 @@ public class FileHandler {
 		var fileName = getFileNameFromPath(path);
 		Path pathToFile = null;
 		if(hasFile(fileName)) {
-			logger.log(Level.WARNING,"{0} already exists in the application and cannot be overwritten",fileName);
+			var existingPath = getPath(fileName);
+			logger.log(Level.WARNING,"{0} already exists in the application at "+ existingPath+" and cannot be overwritten",fileName);
+			path = null;
 		}else {
 			try {
 				var fullPath = Paths.get(context.getPath(),path);
@@ -202,9 +207,11 @@ public class FileHandler {
 				}
 			} catch(FileAlreadyExistsException e) {
 				logger.log(Level.WARNING,"An exception occurred when creating the path: {0}",pathToFile);
+				path = null;
 			}
 			catch (IOException e) {
 				logger.log(Level.WARNING,"An exception occurred when creating the file {0}",e.toString());
+				path = null;
 			}
 		}
 		return path;
@@ -244,7 +251,7 @@ public class FileHandler {
 		if(Helpers.isNullOrEmpty(fullPath)) {
 			throw new NoSuchFileException(path);
 		}
-		Files.delete(Path.of(path));
+		Files.delete(Path.of(fullPath));
 		fileMap.remove(fileName);
 	}
 	

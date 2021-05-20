@@ -86,7 +86,7 @@ class App implements Runnable {
 	private void addFile(String path) {
 		var createdPath = fileSystem.addFile(path);
 		var fileName = fileSystem.getFileNameFromPath(path);
-		if(createdPath!=null) System.out.println("File was successfully added. Path: "+fileSystem.getPath(fileName));
+		if(!Helpers.isNullOrEmpty(createdPath)) System.out.println("File was successfully added. Path: "+fileSystem.getPath(fileName));
 		else {
 			System.out.println("Something went wrong when creating the file.");
 			return;
